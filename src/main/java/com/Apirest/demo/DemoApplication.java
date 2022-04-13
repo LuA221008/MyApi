@@ -11,6 +11,4 @@ public class DemoApplication {
 		SpringApplication.run(DemoApplication.class, args);
 	}
 
-	Movie movie = new Movie("123", "300", "Action", "re mala esa vaina");
-
 }

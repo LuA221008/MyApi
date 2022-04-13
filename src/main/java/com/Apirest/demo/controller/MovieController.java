@@ -3,7 +3,10 @@ package com.Apirest.demo.controller;
 import com.Apirest.demo.model.Movie;
 import com.Apirest.demo.repository.MovieRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -33,15 +36,21 @@ public class MovieController{
 
     @PutMapping(value = "/update/{movieId}")
     public Movie updateMovie(@PathVariable String movieId, @RequestBody Movie movie){
-        movie.setId(movieId);
-        return repository.save(movie);
+        Movie updateMovie = repository.findById(movieId).orElseThrow(() -> {
+            return new ResourceAccessException("No se encontró una pelicula con ese id");
+        });
+        updateMovie.setName(movie.getName());
+        updateMovie.setCategory(movie.getCategory());
+        updateMovie.setRating(movie.getRating());
+        return repository.save(updateMovie);
     }
 
     @DeleteMapping(value = "/delete/{movieId}")
     public void deleteMovie(@PathVariable String movieId){
-        repository.deleteById(movieId);
+        Movie movieDeleted = repository.findById(movieId).orElseThrow(() -> {
+            return new ResponseStatusException(HttpStatus.NOT_FOUND, "No existe esa pelicula");
+        });
+        repository.delete(movieDeleted);
     }
-
-
 
 }
